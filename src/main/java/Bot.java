@@ -15,8 +15,10 @@ import java.util.List;
 
 
 public class Bot extends TelegramLongPollingBot {
+    public static int countUser;
     public static void main(String[] args) {
         ApiContextInitializer.init();
+
         TelegramBotsApi tBApi = new TelegramBotsApi();
         try {
             tBApi.registerBot(new Bot());
@@ -28,8 +30,12 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Model model = new Model();
         String message_text;
+        System.out.println("new query#" + countUser++);
 
         if (update.hasMessage() && (update.getMessage().hasText() || update.getMessage().hasLocation())) {
+            if(update.getMessage().hasText())
+                System.out.println(update.getMessage().toString());
+            System.out.println(update.getMessage().getText());
             long chat_id = update.getMessage().getChatId();
 
             if (update.getMessage().hasLocation()) {
@@ -45,9 +51,10 @@ public class Bot extends TelegramLongPollingBot {
                                 "\n" +
                                 "Привет, Бро! \n" +
                                 "Я Погодный Телеграм Бот! \n" +
-                                "Я знаю о погоде ВСЁ. \n" +
+                                "Я знаю о погоде ВСЁ. \n" +"\n" +
                                 "Напиши мне название города, в котором ты хочешь узнать погоду, \n" +
-                                "и я моментально дам тебе ответ!\n" +
+                                "и я моментально дам тебе ответ!\n" +"\n" +
+                                "Также можно отправить свою геолокацию! " +
                                 "\n" +
                                 "\uD83C\uDF29\uD83C\uDF28❄️☃️⛄️\uD83C\uDF2C\uD83D\uDCA8\uD83D\uDCA7\uD83D\uDCA6☔️";
                         break;
@@ -73,7 +80,7 @@ public class Bot extends TelegramLongPollingBot {
                     message_text = Weather.getWeather(message_text, model);
                     String photo_link = message_text.substring(0, 3);
                     message_text = message_text.substring(3);
-                    SendPhoto foto = new SendPhoto().setChatId(chat_id).setPhoto(new File("C:\\Program Project\\WeatherTelegramBot\\src\\main\\resources\\icon\\" + photo_link.substring(0, 2) + ".png"));
+                    SendPhoto foto = new SendPhoto().setChatId(chat_id).setPhoto(new File("C:\\Users\\notebook\\IdeaProjects\\WeatherTelegramBot\\src\\main\\resources\\icon\\" + photo_link.substring(0, 2) + ".png"));
                     execute(foto);
                 }
             } catch (IOException | TelegramApiException e) {
